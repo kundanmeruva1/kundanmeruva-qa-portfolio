@@ -1,12 +1,17 @@
 {
   "name": "kundan-qa-portfolio",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "Playwright smoke tests for a static QA Engineer portfolio",
+  "description": "Recruiter-facing QA engineering portfolio with Playwright UI, API, and CI examples",
   "scripts": {
-    "test": "playwright test"
+    "test": "playwright test",
+    "test:portfolio": "playwright test --project=portfolio",
+    "test:e2e": "playwright test --project=e2e",
+    "test:api": "playwright test --project=api",
+    "report": "playwright show-report"
   },
   "devDependencies": {
-    "@playwright/test": "^1.56.0"
+    "@playwright/test": "^1.56.0",
+    "ajv": "^8.17.1"
   }
 }
