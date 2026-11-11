@@ -1,0 +1,12 @@
+{
+  "name": "kundan-qa-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Playwright smoke tests for a static QA Engineer portfolio",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0"
+  }
+}
