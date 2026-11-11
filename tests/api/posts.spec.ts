@@ -1,20 +1,30 @@
 import { test, expect } from "@playwright/test";
+import Ajv from "ajv";
+
+const ajv = new Ajv({ allErrors: true });
+const postSchema = {
+  type: "object",
+  required: ["userId", "id", "title", "body"],
+  properties: {
+    userId: { type: "integer" },
+    id: { type: "integer" },
+    title: { type: "string", minLength: 1 },
+    body: { type: "string", minLength: 1 }
+  },
+  additionalProperties: true
+};
+const validatePost = ajv.compile(postSchema);
 
 test.describe("Posts API contract", () => {
-  test("GET /posts/1 returns a valid post representation", async ({ request }) => {
+  test("GET /posts/1 returns a schema-valid post representation", async ({ request }) => {
     const response = await request.get("/posts/1");
 
     expect(response.status()).toBe(200);
     expect(response.headers()["content-type"]).toContain("application/json");
 
     const post = await response.json();
-    expect(post).toMatchObject({
-      userId: expect.any(Number),
-      id: 1,
-      title: expect.any(String),
-      body: expect.any(String)
-    });
-    expect(post.title.length).toBeGreaterThan(0);
+    expect(validatePost(post), JSON.stringify(validatePost.errors)).toBeTruthy();
+    expect(post.id).toBe(1);
   });
 
   test("GET /posts/0 returns not found", async ({ request }) => {
@@ -37,5 +47,6 @@ test.describe("Posts API contract", () => {
       ...payload,
       id: expect.any(Number)
     });
+    expect(validatePost(created), JSON.stringify(validatePost.errors)).toBeTruthy();
   });
 });
