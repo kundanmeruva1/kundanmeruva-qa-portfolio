@@ -1,0 +1,115 @@
+{
+  "info": {
+    "name": "QA Portfolio — JSONPlaceholder API Checks",
+    "description": "Practice collection for REST status, response contract, and create-request validation. Uses a public fake API; POST requests are simulated and are not durably persisted.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://jsonplaceholder.typicode.com"
+    }
+  ],
+  "item": [
+    {
+      "name": "GET post by ID — positive contract",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/posts/1"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('returns JSON content', function () { pm.response.to.have.header('Content-Type'); pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'); });",
+              "const body = pm.response.json();",
+              "pm.test('contains required post fields with expected types', function () {",
+              "  pm.expect(body.id).to.eql(1);",
+              "  pm.expect(body.userId).to.be.a('number');",
+              "  pm.expect(body.title).to.be.a('string').and.not.empty;",
+              "  pm.expect(body.body).to.be.a('string').and.not.empty;",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET missing post — negative contract",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/posts/0"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns HTTP 404 for unknown resource', function () { pm.response.to.have.status(404); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "POST create post — request/response contract",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"QA API contract example\",\n  \"body\": \"Created from a Postman collection\",\n  \"userId\": 7\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/posts"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns HTTP 201', function () { pm.response.to.have.status(201); });",
+              "const body = pm.response.json();",
+              "pm.test('echoes submitted values and returns an ID', function () {",
+              "  pm.expect(body.title).to.eql('QA API contract example');",
+              "  pm.expect(body.body).to.eql('Created from a Postman collection');",
+              "  pm.expect(body.userId).to.eql(7);",
+              "  pm.expect(body.id).to.be.a('number');",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
