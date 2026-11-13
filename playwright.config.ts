@@ -15,6 +15,8 @@ export default defineConfig({
   ],
   outputDir: "test-results",
   use: {
+    // Sauce Demo exposes its stable test selectors through data-test.
+    testIdAttribute: "data-test",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     video: "retain-on-failure"
